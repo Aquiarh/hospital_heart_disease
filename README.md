@@ -1,24 +1,12 @@
-# Hospital Management System: Heart Disease Screening & Risk Prediction
+# Hospital Management System: Heart Disease Risk Screening
 
-An end-to-end clinical machine learning decision-support application built with Scikit-Learn and Streamlit to evaluate patient cardiovascular disease risk during clinical triage.
+A lightning-fast, web-based clinical decision support system evaluating cardiovascular disease risk from physiological vitals, behavioral indicators, and patient medical history.
 
-## Project Overview
-This project implements a complete predictive modeling pipeline integrated into a hospital management workflow. It takes patient biometrics, lifestyle factors, and medical history to evaluate the likelihood of heart disease (presence: 1, absence: 0) and assists clinical staff in preventative screening.
+## Live Deployment
+- **Live Application URL:** [https://hospital-heart-disease.vercel.app](https://hospital-heart-disease.vercel.app)
 
-## Key Features
-- **Data Preprocessing & Encoding:** Encapsulates nominal clinical variables (`sex`, `smoker`, `diabetes`, `family_history`) using Scikit-Learn's `OneHotEncoder(drop='first')` and standardizes continuous vitals (`blood_pressure`, `cholesterol`, `bmi`, `stress_level`) via `StandardScaler` inside a unified `ColumnTransformer`.
-- **Classification Engine:** Supervised Random Forest Classifier trained on a 500-patient hospital cohort using stratified data splitting.
-- **Interactive Medical Portal:** Web-based diagnostic assessment interface developed in Streamlit for real-time patient intake and immediate risk stratification.
-- **Evaluation:** Evaluated across Accuracy, Precision, Recall (Sensitivity), F1-Score, and ROC-AUC.
-
-## Local Setup & Run
-```bash
-# Clone the repository
-git clone [https://github.com/Aquiarh/hospital_heart_disease.git](https://github.com/Aquiarh/hospital_heart_disease.git)
-cd hospital_heart_disease
-
-# Install dependencies
-py -m pip install -r requirements.txt
-
-# Launch the Streamlit application
-py -m streamlit run app.py
+## Features
+- Real-time clinical risk probability calculation.
+- Patient biometric intake (Age, BMI, Blood Pressure, Cholesterol, etc.).
+- Automated clinical triage directives based on patient risk profiles.
+- Fully optimized and deployed on Vercel as a high-performance static web application.
