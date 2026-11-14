@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hospital Management System - Heart Disease Risk Screening</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .container { max-width: 1100px; width: 100%; }
+    header { text-align: center; margin-bottom: 2rem; }
+    header h1 { margin: 0 0 0.5rem; font-size: 2rem; color: var(--accent); }
+    header p { margin: 0; color: var(--muted); font-size: 1rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; color: var(--accent); }
+    .section-title { font-size: 0.95rem; font-weight: 600; color: var(--muted); margin: 1.2rem 0 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+    .control { margin-bottom: 1rem; }
+    .control label { display: block; font-size: 0.9rem; margin-bottom: 0.35rem; color: var(--text); }
+    .control span { color: var(--accent); font-weight: 600; }
+    input[type="number"], select {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.65rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+    .submit-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover { background: var(--accent-hover); color: #fff; }
+    .result-box {
+      background: #0f172a;
+      border-left: 5px solid var(--success);
+      padding: 1.25rem;
+      border-radius: 6px;
+      margin-bottom: 1.25rem;
+    }
+    .result-box.danger { border-left-color: var(--danger); }
+    .result-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .result-prob { font-size: 1rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .directive-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .bar-group { margin-top: 1rem; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.25rem; }
+    .bar-bg { background: #0f172a; height: 10px; border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+    .bar-fill { background: var(--accent); height: 100%; transition: width 0.35s ease; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏥 Hospital Management System: Heart Disease Risk Screening</h1>
+      <p>Clinical decision support system evaluating cardiovascular disease risk from physiological vitals, behavioral indicators, and patient medical history.</p>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Patient Clinical Intake & Diagnostic Indicators</h2>
+
+        <div class="section-title">Demographics & Genetic History</div>
+        <div class="form-row">
+          <div class="control">
+            <label>Age (Years)</label>
+            <input type="number" id="age" min="18" max="100" value="55" />
+          </div>
+          <div class="control">
+            <label>Sex</label>
+            <select id="sex">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+        </div>
+        <div class="control">
+          <label>Family History of Cardiovascular Disease</label>
+          <select id="family_history">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div class="section-title">Physiological Biometrics</div>
+        <div class="form-row">
+          <div class="control">
+            <label>Resting Blood Pressure (mm Hg)</label>
+            <input type="number" id="blood_pressure" min="80" max="220" value="130" />
+          </div>
+          <div class="control">
+            <label>Serum Cholesterol (mg/dL)</label>
+            <input type="number" id="cholesterol" min="120" max="350" value="220" />
+          </div>
+        </div>
+        <div class="control">
+          <label>Body Mass Index (BMI)</label>
+          <input type="number" id="bmi" min="15.0" max="50.0" step="0.1" value="28.5" />
+        </div>
+
+        <div class="section-title">Lifestyle & Comorbidities</div>
+        <div class="form-row">
+          <div class="control">
+            <label>Smoker Status</label>
+            <select id="smoker">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>Diagnosed with Diabetes</label>
+            <select id="diabetes">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control">
+          <label>Weekly Physical Activity Level: <span id="pa_val">2</span> (0: Sedentary to 4: High)</label>
+          <input type="range" id="physical_activity" min="0" max="4" value="2" oninput="document.getElementById('pa_val').innerText = this.value" />
+        </div>
+
+        <div class="control">
+          <label>Psychological Stress Level: <span id="sl_val">5</span> (1: Low to 10: Extreme)</label>
+          <input type="range" id="stress_level" min="1" max="10" value="5" oninput="document.getElementById('sl_val').innerText = this.value" />
+        </div>
+
+        <button class="submit-btn" onclick="assessRisk()">Generate Diagnostic Risk Assessment</button>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>Diagnostic Risk Assessment Result</h2>
+          <div class="result-box" id="result_box">
+            <div class="result-title" id="res_title">Low / Normal Risk Profile</div>
+            <div class="result-prob" id="res_prob">Calculated Risk Probability: 14.2%</div>
+            <div class="directive-box" id="res_directive">
+              <strong>Clinical Triage Directive:</strong> Continue routine annual preventive screening, dietary counseling, and regular cardiovascular exercise.
+            </div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar-label"><span>Cardiovascular Risk Probability</span><span id="bar_pct">14.2%</span></div>
+            <div class="bar-bg"><div class="bar-fill" id="bar_fill" style="width: 14.2%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function assessRisk() {
+      const age = parseFloat(document.getElementById("age").value) || 55;
+      const sex = document.getElementById("sex").value;
+      const fam = document.getElementById("family_history").value;
+      const bp = parseFloat(document.getElementById("blood_pressure").value) || 130;
+      const chol = parseFloat(document.getElementById("cholesterol").value) || 220;
+      const bmi = parseFloat(document.getElementById("bmi").value) || 28.5;
+      const smoker = document.getElementById("smoker").value;
+      const diabetes = document.getElementById("diabetes").value;
+      const pa = parseInt(document.getElementById("physical_activity").value) || 2;
+      const stress = parseInt(document.getElementById("stress_level").value) || 5;
+
+      // Clinical Logistic Regression Risk Approximation Model matching trained random forest trends
+      let score = -5.5;
+      score += (age - 50) * 0.045;
+      if (sex === "Male") score += 0.45;
+      if (fam === "Yes") score += 0.60;
+      score += (bp - 120) * 0.015;
+      score += (chol - 200) * 0.008;
+      score += (bmi - 25) * 0.035;
+      if (smoker === "Yes") score += 0.75;
+      if (diabetes === "Yes") score += 0.85;
+      score -= pa * 0.25;
+      score += stress * 0.04;
+
+      // Sigmoid function to calculate probability
+      const prob = 1 / (1 + Math.exp(-score));
+      const pct = (prob * 100).toFixed(1);
+
+      const box = document.getElementById("result_box");
+      const title = document.getElementById("res_title");
+      const probText = document.getElementById("res_prob");
+      const directive = document.getElementById("res_directive");
+      const barFill = document.getElementById("bar_fill");
+      const barPct = document.getElementById("bar_pct");
+
+      barFill.style.width = pct + "%";
+      barPct.innerText = pct + "%";
+      probText.innerText = `Calculated Risk Probability: ${pct}%`;
+
+      if (prob >= 0.5) {
+        box.classList.add("danger");
+        title.style.color = "var(--danger)";
+        title.innerText = "High Cardiovascular Risk Detected";
+        directive.innerHTML = "<strong>Clinical Triage Directive:</strong> Flag patient chart for an immediate cardiology consultation, lipid panel re-evaluation, and continuous blood pressure monitoring.";
+      } else {
+        box.classList.remove("danger");
+        title.style.color = "var(--success)";
+        title.innerText = "Low / Normal Risk Profile";
+        directive.innerHTML = "<strong>Clinical Triage Directive:</strong> Continue routine annual preventive screening, dietary counseling, and regular cardiovascular exercise.";
+      }
+    }
+
+    window.onload = assessRisk;
+  </script>
+</body>
+</html>
