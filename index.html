@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Heart Disease Risk Screening | Korbla Patience Aku Dela</title>
+  <title>Heart Disease Risk Classifier &amp; ML Analytics Dashboard</title>
   <style>
     :root {
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --primary-light: #f0fdfa;
       --navy: #0f172a;
-      --teal: #0d9488;
-      --teal-dark: #0f766e;
-      --teal-soft: #f0fdfa;
-      --red: #dc2626;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
       --amber: #d97706;
+      --amber-light: #fffbeb;
       --bg: #f8fafc;
       --card: #ffffff;
       --text: #1e293b;
@@ -19,271 +21,370 @@
       --border: #e2e8f0;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 3rem; }
-    .container { max-width: 1080px; margin: 0 auto; padding: 0 1rem; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 2.5rem;
+    }
+    .container { max-width: 980px; margin: 0 auto; padding: 0 1rem; }
 
-    header { background: var(--card); border-bottom: 1px solid var(--border); padding: 1.35rem 0; }
-    .header-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-    .target-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--teal-soft); border: 1px solid #99f6e4; color: var(--teal-dark); font-size: 0.75rem; font-weight: 700; padding: 0.22rem 0.7rem; border-radius: 999px; margin-bottom: 0.45rem; }
-    header h1 { font-size: 1.5rem; font-weight: 800; color: var(--navy); letter-spacing: -0.01em; }
-    header p { color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; }
-    .header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
-    .status-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; font-size: 0.78rem; font-weight: 700; padding: 0.4rem 0.75rem; border-radius: 0.55rem; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
-    .repo-btn { text-decoration: none; background: var(--navy); color: #fff; font-size: 0.8rem; font-weight: 700; padding: 0.44rem 0.9rem; border-radius: 0.55rem; }
-    .repo-btn:hover { background: var(--teal-dark); }
+    header {
+      background: linear-gradient(135deg, #0f766e 0%, #0f172a 100%);
+      color: #fff;
+      padding: 1.5rem 0 1.4rem;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #ccfbf1;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 0.5rem;
+    }
+    header h1 { font-size: 1.55rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.35rem; }
+    header p { color: #cbd5e1; font-size: 0.88rem; max-width: 680px; }
+    .header-links { margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .header-links a {
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 0.32rem 0.75rem;
+      border-radius: 0.5rem;
+    }
+    .header-links a:hover { background: rgba(255, 255, 255, 0.22); }
 
-    .nav-wrap { position: sticky; top: 0; z-index: 30; background: rgba(248, 250, 252, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 0.6rem 0; }
-    .tabs { display: flex; gap: 0.45rem; overflow-x: auto; }
-    .tab-btn { padding: 0.52rem 0.9rem; border-radius: 0.55rem; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: 0.82rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-    .tab-btn:hover { border-color: var(--teal); color: var(--navy); }
-    .tab-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15); }
-    .panel { display: none; margin-top: 1.2rem; }
-    .panel.active { display: block; }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-top: 1rem;
+    }
+    @media (min-width: 680px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+    .kpi {
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 0.65rem;
+      padding: 0.6rem 0.8rem;
+    }
+    .kpi-label { font-size: 0.68rem; text-transform: uppercase; color: #99f6e4; letter-spacing: 0.04em; font-weight: 700; }
+    .kpi-val { font-size: 1.05rem; font-weight: 800; color: #fff; margin-top: 0.12rem; }
 
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 0.85rem; padding: 1.15rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+    .tabs-bar {
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      background: rgba(248, 250, 252, 0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.65rem 0;
+    }
+    .tabs { display: flex; gap: 0.5rem; overflow-x: auto; }
+    .tab-btn {
+      flex: 1;
+      min-height: 44px;
+      padding: 0.5rem 0.85rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.84rem;
+      border-radius: 0.65rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.22);
+    }
+    .tab-panel { display: none; margin-top: 1.15rem; }
+    .tab-panel.active { display: block; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 1.1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
     .card h2 { font-size: 1.08rem; font-weight: 700; color: var(--navy); margin-bottom: 0.25rem; }
-    .card h3 { font-size: 0.98rem; font-weight: 700; color: var(--navy); margin-bottom: 0.25rem; }
-    .sub { color: var(--muted); font-size: 0.82rem; margin-bottom: 0.9rem; }
+    .card-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.9rem; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-    @media (min-width: 800px) { .grid-2 { grid-template-columns: 1.1fr 0.9fr; align-items: start; } }
+    .presets { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .preset-btn {
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--navy);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary-dark); }
 
-    .kpi-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
-    @media (min-width: 760px) { .kpi-row { grid-template-columns: repeat(5, 1fr); } }
-    .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.85rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
-    .kpi-title { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-    .kpi-num { font-size: 1.4rem; font-weight: 800; color: var(--teal-dark); margin: 0.2rem 0; }
-    .kpi-note { font-size: 0.75rem; color: var(--muted); }
+    .predict-layout { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 780px) {
+      .predict-layout { grid-template-columns: 1.12fr 0.88fr; align-items: start; }
+      .result-col { order: 2; position: sticky; top: 4.5rem; }
+      .input-col { order: 1; }
+    }
 
-    .presets { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.85rem; }
-    .preset { background: #f1f5f9; border: 1px solid var(--border); color: var(--navy); font-size: 0.76rem; font-weight: 600; padding: 0.38rem 0.75rem; border-radius: 999px; cursor: pointer; }
-    .preset:hover { background: #e2e8f0; }
+    .result-hero {
+      border-radius: 0.75rem;
+      padding: 1rem;
+      border: 1px solid #99f6e4;
+      background: var(--primary-light);
+      margin-bottom: 0.9rem;
+    }
+    .result-hero.moderate { border-color: #fde68a; background: var(--amber-light); }
+    .result-hero.high { border-color: #fecaca; background: var(--danger-light); }
+    .result-tag { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary-dark); }
+    .result-title { font-size: 1.4rem; font-weight: 800; color: var(--navy); margin: 0.15rem 0; }
+    .result-conf { font-size: 0.88rem; font-weight: 600; color: #334155; }
 
-    .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 0.85rem; }
-    label { display: block; font-size: 0.78rem; color: #334155; font-weight: 600; margin-bottom: 0.25rem; }
-    select { width: 100%; background: #fff; color: var(--navy); border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.45rem 0.6rem; font-size: 0.84rem; font-weight: 600; }
-    .slider-item { margin-bottom: 0.75rem; }
-    .slider-top { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem; }
-    .slider-top span:last-child { color: var(--teal-dark); font-weight: 800; }
-    input[type="range"] { width: 100%; accent-color: var(--navy); cursor: pointer; }
+    .prob-row { margin-bottom: 0.65rem; }
+    .prob-head { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .prob-track { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .prob-fill { height: 100%; border-radius: 999px; transition: width 0.25s ease; }
 
-    .meta-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; background: #f8fafc; border: 1px solid var(--border); padding: 0.75rem; border-radius: 0.6rem; font-size: 0.78rem; margin-top: 0.75rem; }
-    .meta-list span { color: var(--muted); display: block; font-size: 0.7rem; }
+    .triage-note {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 0.65rem;
+      padding: 0.8rem;
+      font-size: 0.82rem;
+      color: #334155;
+      margin-top: 0.75rem;
+    }
 
-    .out-box { border-radius: 0.75rem; padding: 1rem; background: var(--teal-soft); border-left: 5px solid var(--teal); margin-bottom: 0.85rem; }
-    .out-box.warn { border-left-color: var(--amber); background: #fffbeb; }
-    .out-box.danger { border-left-color: var(--red); background: #fef2f2; }
-    .out-label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--teal-dark); }
-    .out-main { font-size: 1.35rem; font-weight: 800; color: var(--navy); margin: 0.2rem 0; }
-    .bar-bg { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin: 0.6rem 0; }
-    .bar-fill { height: 100%; background: var(--teal); transition: width 0.2s ease; }
-    .directive-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.75rem; font-size: 0.83rem; color: #334155; }
-    pre { background: #0f172a; color: #38bdf8; padding: 0.7rem; border-radius: 0.55rem; font-size: 0.74rem; overflow-x: auto; margin-top: 0.65rem; }
+    .section-lbl {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin: 0.9rem 0 0.55rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; }
+    .field label { display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155; }
+    select {
+      width: 100%;
+      min-height: 40px;
+      padding: 0.45rem 0.65rem;
+      border-radius: 0.55rem;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .slider-row { margin-bottom: 0.8rem; }
+    .slider-head { display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .slider-val { color: var(--primary-dark); font-weight: 800; }
+    input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    details { margin-top: 0.8rem; font-size: 0.78rem; }
+    summary { cursor: pointer; font-weight: 700; color: var(--muted); }
+    pre {
+      background: #0f172a;
+      color: #5eead4;
+      padding: 0.7rem;
+      border-radius: 0.55rem;
+      overflow-x: auto;
+      margin-top: 0.45rem;
+      font-size: 0.74rem;
+    }
 
     .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-    th { background: var(--navy); color: #fff; text-align: left; padding: 0.6rem 0.75rem; }
-    td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    th { background: var(--primary); color: #fff; text-align: left; padding: 0.6rem 0.75rem; }
+    td { padding: 0.58rem 0.75rem; border-bottom: 1px solid var(--border); }
     tr:nth-child(even) td { background: #f8fafc; }
 
-    .cm-table td, .cm-table th { text-align: center; border: 1px solid var(--border); padding: 0.85rem; }
-    .cm-big { font-size: 1.35rem; font-weight: 800; display: block; }
-    .rate-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; margin-top: 0.85rem; }
-    @media (min-width: 700px) { .rate-grid { grid-template-columns: repeat(3, 1fr); } }
-    .rate-item { background: #f8fafc; padding: 0.75rem; border-radius: 0.6rem; border: 1px solid var(--border); }
-    .rate-item span { font-size: 0.74rem; color: var(--muted); display: block; }
-    .rate-item strong { font-size: 0.98rem; color: var(--navy); }
+    .cm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-top: 0.5rem; }
+    .cm-cell { border-radius: 0.7rem; padding: 0.9rem; text-align: center; border: 1px solid var(--border); }
+    .cm-num { font-size: 1.55rem; font-weight: 800; }
+    .cm-desc { font-size: 0.76rem; font-weight: 700; margin-top: 0.15rem; }
 
-    .chart { width: 100%; height: auto; border-radius: 0.6rem; border: 1px solid var(--border); background: #fff; margin-top: 0.5rem; }
-    .diag-list { list-style: none; display: grid; gap: 0.75rem; }
-    .diag-list li { background: #f8fafc; border: 1px solid var(--border); border-radius: 0.65rem; padding: 0.85rem; }
-    .diag-list strong { color: var(--navy); display: block; margin-bottom: 0.2rem; }
-    footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .chart-img { width: 100%; height: auto; border-radius: 0.6rem; border: 1px solid var(--border); margin-top: 0.5rem; }
+    footer { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 1.75rem; }
   </style>
 </head>
 <body>
   <header>
-    <div class="container header-top">
-      <div>
-        <div class="target-pill">Target: Heart Disease (Class 1)</div>
-        <h1>Hospital Management System: Heart Disease Risk Screening</h1>
-        <p>RandomForestClassifier (100 Trees) + OneHotEncoder + StandardScaler • 500 Clinical Records</p>
+    <div class="container">
+      <div class="badge">Clinical Binary Classification &bull; Scikit-Learn OneHotEncoder Pipeline</div>
+      <h1>Heart Disease Risk Classifier &amp; ML Analytics Dashboard</h1>
+      <p>Interactive clinical decision support and exploratory analytics trained on 500 patient records using OneHotEncoder, StandardScaler, and Random Forest / Logistic Regression.</p>
+      <div class="header-links">
+        <a href="https://github.com/Aquiarh/hospital_heart_disease" target="_blank" rel="noopener">GitHub Repository</a>
+        <a href="https://github.com/Aquiarh/hospital_heart_disease/blob/main/heart_disease_analysis.ipynb" target="_blank" rel="noopener">Jupyter Notebook</a>
       </div>
-      <div class="header-actions">
-        <div class="status-pill"><span class="dot"></span> Pipeline Ready</div>
-        <a class="repo-btn" href="https://github.com/Aquiarh/hospital_heart_disease" target="_blank" rel="noopener">Repository</a>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Clinical Dataset</div><div class="kpi-val">500 Records</div></div>
+        <div class="kpi"><div class="kpi-label">Preprocessing</div><div class="kpi-val">OHE + Scaler</div></div>
+        <div class="kpi"><div class="kpi-label">Hold-Out Accuracy</div><div class="kpi-val">56.00% (SVM 58%)</div></div>
+        <div class="kpi"><div class="kpi-label">Hold-Out ROC-AUC</div><div class="kpi-val">56.80% (SVM 58.6%)</div></div>
       </div>
     </div>
   </header>
 
-  <div class="nav-wrap">
+  <div class="tabs-bar">
     <div class="container tabs">
-      <button class="tab-btn active" onclick="openTab('inference', this)">Live Inference</button>
-      <button class="tab-btn" onclick="openTab('performance', this)">Performance</button>
-      <button class="tab-btn" onclick="openTab('features', this)">Feature Analysis</button>
-      <button class="tab-btn" onclick="openTab('matrix', this)">Contingency Matrix</button>
-      <button class="tab-btn" onclick="openTab('dataset', this)">Dataset</button>
-      <button class="tab-btn" onclick="openTab('diagnostics', this)">Diagnostics</button>
+      <button class="tab-btn active" onclick="switchTab('predict', this)">1. Risk Classifier</button>
+      <button class="tab-btn" onclick="switchTab('eda', this)">2. EDA &amp; Correlations</button>
+      <button class="tab-btn" onclick="switchTab('bench', this)">3. Model Benchmarks</button>
     </div>
   </div>
 
   <main class="container">
-    <!-- 1. LIVE INFERENCE -->
-    <section id="panel-inference" class="panel active">
-      <div class="grid-2">
-        <div class="card">
-          <h2>Clinical Intake &amp; Model Controls</h2>
-          <p class="sub">Select a sample patient profile or adjust physiological vitals and categorical risk factors.</p>
-          <div class="presets">
-            <button class="preset" onclick="setPreset(34,'Female','No',105,175,22.0,'No','No',4,2)">Sample 1 (Low Risk)</button>
-            <button class="preset" onclick="setPreset(55,'Male','No',130,220,28.5,'No','No',2,5)">Sample 2 (Standard)</button>
-            <button class="preset" onclick="setPreset(48,'Female','Yes',138,230,27.0,'No','Yes',2,6)">Sample 3 (Borderline)</button>
-            <button class="preset" onclick="setPreset(72,'Male','Yes',168,282,35.4,'Yes','Yes',0,9)">Sample 4 (High Risk)</button>
-          </div>
+    <!-- TAB 1: CLASSIFIER -->
+    <section id="tab-predict" class="tab-panel active">
+      <div class="card">
+        <h2>Quick-Test Clinical Patient Profiles</h2>
+        <div class="card-sub">Load representative patient profiles or adjust the physiological sliders and categorical indicators below for live risk inference.</div>
+        <div class="presets">
+          <button class="preset-btn" onclick="loadPreset(34,'Female','No',105,175,22.0,'No','No',4,2)">Low Risk Profile</button>
+          <button class="preset-btn" onclick="loadPreset(55,'Male','No',130,220,28.5,'No','No',2,5)">Standard Patient</button>
+          <button class="preset-btn" onclick="loadPreset(48,'Female','Yes',138,230,27.0,'No','Yes',2,6)">Borderline Risk</button>
+          <button class="preset-btn" onclick="loadPreset(72,'Male','Yes',168,282,35.4,'Yes','Yes',0,9)">High Risk (Smoker + Diabetic)</button>
+        </div>
+      </div>
 
-          <div class="slider-item">
-            <div class="slider-top"><span>Decision Confidence Threshold</span><span id="v_thresh">0.50</span></div>
-            <input type="range" id="thresh" min="0.25" max="0.75" step="0.05" value="0.50" oninput="runInference()" />
-          </div>
+      <div class="predict-layout">
+        <div class="result-col">
+          <div class="card">
+            <h2>Diagnostic Risk Assessment</h2>
+            <div id="resultHero" class="result-hero">
+              <div id="resultTag" class="result-tag">Predicted Class: 0 (Low Risk)</div>
+              <div id="resultTitle" class="result-title">No Heart Disease</div>
+              <div id="resultConf" class="result-conf">Model Confidence: 57.9%</div>
+            </div>
 
-          <div class="cat-grid">
-            <div><label for="sex">Sex (OneHotEncoder)</label><select id="sex" onchange="runInference()"><option value="Male">Male</option><option value="Female">Female</option></select></div>
-            <div><label for="family_history">Family History</label><select id="family_history" onchange="runInference()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-            <div><label for="smoker">Smoker Status</label><select id="smoker" onchange="runInference()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-            <div><label for="diabetes">Diabetes History</label><select id="diabetes" onchange="runInference()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-          </div>
+            <div class="prob-row">
+              <div class="prob-head"><span>Class 0 — No Heart Disease</span><span id="p0_txt">57.9%</span></div>
+              <div class="prob-track"><div id="p0_bar" class="prob-fill" style="width:57.9%;background:#0f766e;"></div></div>
+            </div>
+            <div class="prob-row">
+              <div class="prob-head"><span>Class 1 — Heart Disease Risk</span><span id="p1_txt">42.1%</span></div>
+              <div class="prob-track"><div id="p1_bar" class="prob-fill" style="width:42.1%;background:#dc2626;"></div></div>
+            </div>
 
-          <div class="slider-item"><div class="slider-top"><span>Age (Years)</span><span id="v_age">55 yrs</span></div><input type="range" id="age" min="30" max="79" value="55" oninput="runInference()" /></div>
-          <div class="slider-item"><div class="slider-top"><span>Resting Blood Pressure</span><span id="v_bp">130 mmHg</span></div><input type="range" id="blood_pressure" min="90" max="179" value="130" oninput="runInference()" /></div>
-          <div class="slider-item"><div class="slider-top"><span>Serum Cholesterol</span><span id="v_chol">220 mg/dL</span></div><input type="range" id="cholesterol" min="150" max="299" value="220" oninput="runInference()" /></div>
-          <div class="slider-item"><div class="slider-top"><span>Body Mass Index (BMI)</span><span id="v_bmi">28.5 kg/m&sup2;</span></div><input type="range" id="bmi" min="18.1" max="40.0" step="0.1" value="28.5" oninput="runInference()" /></div>
-          <div class="slider-item"><div class="slider-top"><span>Weekly Physical Activity</span><span id="v_act">2 / 4</span></div><input type="range" id="physical_activity" min="0" max="4" value="2" oninput="runInference()" /></div>
-          <div class="slider-item"><div class="slider-top"><span>Psychological Stress Level</span><span id="v_stress">5 / 9</span></div><input type="range" id="stress_level" min="1" max="9" value="5" oninput="runInference()" /></div>
+            <div id="triageNote" class="triage-note">
+              <strong>Clinical Guidance:</strong> Continue routine annual preventive screening, balanced nutrition, and regular cardiovascular exercise.
+            </div>
 
-          <div class="meta-list">
-            <div><span>Architecture</span><strong>Random Forest + OHE</strong></div>
-            <div><span>Target Class</span><strong>Heart Disease (ID: 1)</strong></div>
-            <div><span>Encoded Dimensions</span><strong>10 Features (6 Num + 4 Cat)</strong></div>
-            <div><span>Dataset Split</span><strong>80% Train / 20% Test</strong></div>
+            <details>
+              <summary>Inspect Preprocessed Vector (StandardScaler + OneHotEncoder)</summary>
+              <pre id="vecDebug"></pre>
+            </details>
           </div>
         </div>
 
-        <div class="card">
-          <h2>Diagnostic Inference Output</h2>
-          <p class="sub">Real-time risk probability computed from StandardScaler + OneHotEncoder feature vector.</p>
-          <div id="outBox" class="out-box">
-            <div id="outLabel" class="out-label">Low / Normal Risk Profile</div>
-            <div id="outMain" class="out-main">No Heart Disease (Class 0)</div>
-            <div id="outProb">Risk Probability: 42.1% (Threshold: 50.0%)</div>
-            <div class="bar-bg"><div id="barFill" class="bar-fill" style="width:42.1%"></div></div>
+        <div class="input-col">
+          <div class="card">
+            <h2>Patient Intake &amp; Clinical Indicators</h2>
+
+            <div class="section-lbl">Categorical Predictors (OneHotEncoder)</div>
+            <div class="cat-grid">
+              <div class="field">
+                <label for="sex">Biological Sex</label>
+                <select id="sex" onchange="predict()">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="family_history">Family History</label>
+                <select id="family_history" onchange="predict()">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="smoker">Smoker Status</label>
+                <select id="smoker" onchange="predict()">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="diabetes">Diagnosed Diabetes</label>
+                <select id="diabetes" onchange="predict()">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="section-lbl">Continuous Biometrics (StandardScaler)</div>
+            <div class="slider-row">
+              <div class="slider-head"><span>Age (Years)</span><span id="v_age" class="slider-val">55 yrs</span></div>
+              <input type="range" id="age" min="30" max="79" step="1" value="55" oninput="predict()" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-head"><span>Resting Blood Pressure</span><span id="v_bp" class="slider-val">130 mmHg</span></div>
+              <input type="range" id="blood_pressure" min="90" max="179" step="1" value="130" oninput="predict()" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-head"><span>Serum Cholesterol</span><span id="v_chol" class="slider-val">220 mg/dL</span></div>
+              <input type="range" id="cholesterol" min="150" max="299" step="1" value="220" oninput="predict()" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-head"><span>Body Mass Index (BMI)</span><span id="v_bmi" class="slider-val">28.5 kg/m&sup2;</span></div>
+              <input type="range" id="bmi" min="18.1" max="40.0" step="0.1" value="28.5" oninput="predict()" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-head"><span>Weekly Physical Activity (0 to 4)</span><span id="v_act" class="slider-val">2 / 4</span></div>
+              <input type="range" id="physical_activity" min="0" max="4" step="1" value="2" oninput="predict()" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-head"><span>Psychological Stress Level (1 to 9)</span><span id="v_stress" class="slider-val">5 / 9</span></div>
+              <input type="range" id="stress_level" min="1" max="9" step="1" value="5" oninput="predict()" />
+            </div>
           </div>
-          <div id="directive" class="directive-box">
-            <strong>Clinical Triage Directive:</strong> Continue routine annual preventive screening, dietary counseling, and regular cardiovascular exercise.
-          </div>
-          <pre id="vecOut"></pre>
         </div>
       </div>
     </section>
 
-    <!-- 2. PERFORMANCE -->
-    <section id="panel-performance" class="panel">
-      <div class="kpi-row">
-        <div class="kpi-card"><div class="kpi-title">Hold-Out Accuracy</div><div class="kpi-num">56.00%</div><div class="kpi-note">Random Forest (100 Trees)</div></div>
-        <div class="kpi-card"><div class="kpi-title">ROC-AUC Score</div><div class="kpi-num">56.80%</div><div class="kpi-note">SVM RBF Peaks at 58.57%</div></div>
-        <div class="kpi-card"><div class="kpi-title">Precision (PPV)</div><div class="kpi-num">58.82%</div><div class="kpi-note">53 Positive Test Instances</div></div>
-        <div class="kpi-card"><div class="kpi-title">Recall (Sensitivity)</div><div class="kpi-num">56.60%</div><div class="kpi-note">Logistic Reg. Peaks at 75.47%</div></div>
-        <div class="kpi-card"><div class="kpi-title">F1-Score</div><div class="kpi-num">0.577</div><div class="kpi-note">5-Fold CV: 49.20% &plusmn; 1.17%</div></div>
+    <!-- TAB 2: EDA & CORRELATIONS -->
+    <section id="tab-eda" class="tab-panel">
+      <div class="card">
+        <h2>Cohort Balance &amp; Categorical Risk Factor Prevalence</h2>
+        <div class="card-sub">N = 500 clinical records: 266 positive cases (53.2%) and 234 negative cases (46.8%).</div>
+        <img class="chart-img" src="./heart_charts/fig1_cohort_prevalence.png" alt="Cohort Balance and Risk Factor Prevalence" />
       </div>
 
       <div class="card">
-        <h3>Validation Summary Table (80/20 Stratified Split &amp; 5-Fold CV)</h3>
+        <h2>Pearson Correlation Matrix &amp; OLS Linear Regression</h2>
+        <div class="card-sub">OLS Regression Fit: blood_pressure = 0.0582 &times; age + 129.6797 (r = 0.0315, R&sup2; = 0.0010).</div>
+        <img class="chart-img" src="./heart_charts/fig2_correlation_matrix.png" alt="Pearson Correlation Matrix" />
+        <img class="chart-img" src="./heart_charts/fig3_regression_vitals.png" alt="OLS Regression Age vs Blood Pressure" />
+      </div>
+
+      <div class="card">
+        <h2>Summary Statistics (N = 500)</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Model Architecture</th><th>Test Acc.</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>ROC-AUC</th><th>5-Fold CV Mean</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Random Forest (100 Trees)</strong></td><td>56.00%</td><td>58.82%</td><td>56.60%</td><td>0.5769</td><td>56.80%</td><td>49.20% &plusmn; 1.17%</td></tr>
-              <tr><td><strong>Support Vector Machine (RBF)</strong></td><td>58.00%</td><td>59.32%</td><td>66.04%</td><td>0.6250</td><td>58.57%</td><td>52.80% &plusmn; 4.45%</td></tr>
-              <tr><td><strong>Logistic Regression</strong></td><td>55.00%</td><td>55.56%</td><td>75.47%</td><td>0.6400</td><td>50.46%</td><td>52.20% &plusmn; 4.83%</td></tr>
-              <tr><td><strong>K-Nearest Neighbors (k=5)</strong></td><td>50.00%</td><td>52.73%</td><td>54.72%</td><td>0.5370</td><td>47.69%</td><td>48.40% &plusmn; 3.32%</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Hold-Out ROC-AUC Curves &amp; Multi-Algorithm Benchmark</h3>
-        <img class="chart" src="./heart_charts/fig4_confusion_roc.png" alt="Confusion Matrix and ROC-AUC Curves" />
-        <img class="chart" src="./heart_charts/fig5_model_comparison.png" alt="Model Comparison Benchmark" />
-      </div>
-    </section>
-
-    <!-- 3. FEATURE ANALYSIS -->
-    <section id="panel-features" class="panel">
-      <div class="card">
-        <h3>Feature Importance (OneHotEncoder + Random Forest Pipeline)</h3>
-        <p class="sub">Gini impurity reduction across 6 StandardScaler continuous features and 4 OneHotEncoder binary indicators.</p>
-        <img class="chart" src="./heart_charts/fig6_feature_weights.png" alt="Feature Importance Chart" />
-      </div>
-      <div class="card">
-        <h3>ColumnTransformer Schema &amp; Encoding Specification</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Raw Column</th><th>Data Type</th><th>Transformer</th><th>Encoded Feature</th></tr></thead>
-            <tbody>
-              <tr><td>age, blood_pressure, cholesterol, bmi, physical_activity, stress_level</td><td>Numerical (6)</td><td>StandardScaler()</td><td>Zero-mean unit-variance standardized features</td></tr>
-              <tr><td>sex</td><td>Categorical</td><td>OneHotEncoder(drop='first')</td><td>sex_Male (1 = Male, 0 = Female)</td></tr>
-              <tr><td>smoker</td><td>Categorical</td><td>OneHotEncoder(drop='first')</td><td>smoker_Yes (1 = Yes, 0 = No)</td></tr>
-              <tr><td>diabetes</td><td>Categorical</td><td>OneHotEncoder(drop='first')</td><td>diabetes_Yes (1 = Yes, 0 = No)</td></tr>
-              <tr><td>family_history</td><td>Categorical</td><td>OneHotEncoder(drop='first')</td><td>family_history_Yes (1 = Yes, 0 = No)</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. CONTINGENCY MATRIX -->
-    <section id="panel-matrix" class="panel">
-      <div class="card">
-        <h3>Contingency (Confusion) Matrix — Hold-Out Test Set (n = 100)</h3>
-        <p class="sub">Derived from 53 positive Heart Disease instances and 47 negative instances (Recall = 56.60%, Precision = 58.82%).</p>
-        <div class="table-wrap">
-          <table class="cm-table">
-            <thead><tr><th></th><th>Predicted: Heart Disease (1)</th><th>Predicted: No Disease (0)</th></tr></thead>
-            <tbody>
-              <tr><th>Actual: Heart Disease (1)</th><td><span class="cm-big" style="color:#0f766e;">30</span>True Positive (56.60%)</td><td><span class="cm-big" style="color:#dc2626;">23</span>False Negative (43.40%)</td></tr>
-              <tr><th>Actual: No Disease (0)</th><td><span class="cm-big" style="color:#d97706;">21</span>False Positive (41.18% FDR)</td><td><span class="cm-big" style="color:#1e3a8a;">26</span>True Negative (55.32%)</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3 style="margin-top:1.15rem;">Derived Statistical Rates</h3>
-        <div class="rate-grid">
-          <div class="rate-item"><span>Sensitivity / Recall (TPR)</span><strong>56.60% (30 / 53)</strong></div>
-          <div class="rate-item"><span>Specificity (TNR)</span><strong>55.32% (26 / 47)</strong></div>
-          <div class="rate-item"><span>Precision / PPV</span><strong>58.82% (30 / 51)</strong></div>
-          <div class="rate-item"><span>F1-Score (Harmonic Mean)</span><strong>0.5769</strong></div>
-          <div class="rate-item"><span>False Discovery Rate (FDR)</span><strong>41.18% (21 / 51)</strong></div>
-          <div class="rate-item"><span>Miss Rate / FNR</span><strong>43.40% (23 / 53)</strong></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. DATASET -->
-    <section id="panel-dataset" class="panel">
-      <div class="card">
-        <h3>Clinical Cohort Split (500 Valid Records)</h3>
-        <p class="sub">400 Training records (80%) &amp; 100 Hold-Out Test records (20%) • 266 Positive (53.2%) / 234 Negative (46.8%).</p>
-        <img class="chart" src="./heart_charts/fig1_cohort_prevalence.png" alt="Cohort Balance and Risk Factor Prevalence" />
-        <img class="chart" src="./heart_charts/fig2_correlation_matrix.png" alt="Pearson Correlation Matrix" />
-        <img class="chart" src="./heart_charts/fig3_regression_vitals.png" alt="OLS Regression Age vs Blood Pressure" />
-      </div>
-
-      <div class="card">
-        <h3>Numerical Summary Statistics (N = 500)</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Variable</th><th>Mean</th><th>SD</th><th>Min</th><th>50% (Median)</th><th>Max</th></tr></thead>
+            <thead><tr><th>Feature</th><th>Mean</th><th>Std. Dev.</th><th>Min</th><th>Median (50%)</th><th>Max</th></tr></thead>
             <tbody>
               <tr><td><strong>age</strong></td><td>54.86</td><td>14.32</td><td>30.00</td><td>55.00</td><td>79.00</td></tr>
               <tr><td><strong>blood_pressure</strong></td><td>132.87</td><td>26.42</td><td>90.00</td><td>132.00</td><td>179.00</td></tr>
@@ -297,42 +398,60 @@
       </div>
     </section>
 
-    <!-- 6. DIAGNOSTICS -->
-    <section id="panel-diagnostics" class="panel">
+    <!-- TAB 3: MODEL BENCHMARKS -->
+    <section id="tab-bench" class="tab-panel">
       <div class="card">
-        <h3>Model Architecture &amp; Runtime Diagnostics</h3>
-        <ul class="diag-list">
-          <li>
-            <strong>Leak-Free ColumnTransformer Preprocessing (OneHotEncoder + StandardScaler)</strong>
-            Categorical variables (<code>sex</code>, <code>smoker</code>, <code>diabetes</code>, <code>family_history</code>) are transformed with <code>OneHotEncoder(drop='first', handle_unknown='ignore')</code> while continuous vitals are standardized exclusively on the 400-record training fold.
-          </li>
-          <li>
-            <strong>Synthetic Cohort Independence Analysis (OLS r = 0.0315)</strong>
-            Ordinary Least Squares regression of <code>blood_pressure</code> on <code>age</code> yields <code>BP = 0.0582 * age + 129.6797</code> (<code>R² = 0.0010</code>), confirming statistically independent synthetic distributions across predictors and explaining the ~50%–58% baseline ceiling across all four classifiers.
-          </li>
-          <li>
-            <strong>Static Client-Side &amp; Serialized Pipeline Deployment</strong>
-            Trained scikit-learn pipeline is serialized to <code>heart_disease_model.pkl</code> in GitHub alongside this responsive static dashboard deployed on Vercel for sub-millisecond inference.
-          </li>
-        </ul>
+        <h2>Hold-Out Confusion Matrix (Random Forest, n = 100)</h2>
+        <div class="card-sub">Stratified 20% hold-out test split (53 positive Heart Disease cases, 47 negative cases).</div>
+        <div class="cm-grid">
+          <div class="cm-cell" style="background:#f0fdfa;"><div class="cm-num" style="color:#0f766e;">26</div><div class="cm-desc">True Negative (TN)</div></div>
+          <div class="cm-cell" style="background:#fffbeb;"><div class="cm-num" style="color:#b45309;">21</div><div class="cm-desc">False Positive (FP)</div></div>
+          <div class="cm-cell" style="background:#fef2f2;"><div class="cm-num" style="color:#dc2626;">23</div><div class="cm-desc">False Negative (FN)</div></div>
+          <div class="cm-cell" style="background:#eff6ff;"><div class="cm-num" style="color:#1d4ed8;">30</div><div class="cm-desc">True Positive (TP)</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Multi-Algorithm Evaluation Comparison</h2>
+        <div class="card-sub">All classifiers trained inside a ColumnTransformer pipeline (StandardScaler + OneHotEncoder).</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Model Architecture</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>ROC-AUC</th><th>5-Fold CV</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Random Forest (100 Trees)</strong></td><td><strong>56.00%</strong></td><td>58.82%</td><td>56.60%</td><td>57.69%</td><td>56.80%</td><td>49.20% &plusmn; 1.17%</td></tr>
+              <tr><td><strong>Support Vector Machine (RBF)</strong></td><td><strong>58.00%</strong></td><td><strong>59.32%</strong></td><td>66.04%</td><td>62.50%</td><td><strong>58.57%</strong></td><td><strong>52.80% &plusmn; 4.45%</strong></td></tr>
+              <tr><td><strong>Logistic Regression</strong></td><td>55.00%</td><td>55.56%</td><td><strong>75.47%</strong></td><td><strong>64.00%</strong></td><td>50.46%</td><td>52.20% &plusmn; 4.83%</td></tr>
+              <tr><td><strong>K-Nearest Neighbors (k=5)</strong></td><td>50.00%</td><td>52.73%</td><td>54.72%</td><td>53.70%</td><td>47.69%</td><td>48.40% &plusmn; 3.32%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>ROC-AUC Curves, Model Benchmark &amp; Feature Importance</h2>
+        <img class="chart-img" src="./heart_charts/fig4_confusion_roc.png" alt="Confusion Matrix and ROC-AUC Curves" />
+        <img class="chart-img" src="./heart_charts/fig5_model_comparison.png" alt="Model Comparison Benchmark" />
+        <img class="chart-img" src="./heart_charts/fig6_feature_weights.png" alt="Feature Importance Chart" />
       </div>
     </section>
   </main>
 
-  <footer>Korbla Patience Aku Dela - PUIT/24120001</footer>
+  <footer>
+    Korbla Patience Aku Dela (PUIT/24120001) &bull; Heart Disease Classification &amp; ML Analytics Dashboard
+  </footer>
 
   <script>
     const MEAN = [54.86, 132.87, 221.50, 29.02, 2.05, 4.88];
     const STD  = [14.32, 26.42, 43.86, 6.40, 1.42, 2.60];
 
-    function openTab(name, btn) {
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('panel-' + name).classList.add('active');
+      document.getElementById('tab-' + id).classList.add('active');
       btn.classList.add('active');
     }
 
-    function setPreset(age, sex, fam, bp, chol, bmi, smoker, diab, act, stress) {
+    function loadPreset(age, sex, fam, bp, chol, bmi, smoker, diab, act, stress) {
       document.getElementById('age').value = age;
       document.getElementById('sex').value = sex;
       document.getElementById('family_history').value = fam;
@@ -343,11 +462,10 @@
       document.getElementById('diabetes').value = diab;
       document.getElementById('physical_activity').value = act;
       document.getElementById('stress_level').value = stress;
-      runInference();
+      predict();
     }
 
-    function runInference() {
-      const thresh = parseFloat(document.getElementById('thresh').value);
+    function predict() {
       const age = parseFloat(document.getElementById('age').value);
       const bp = parseFloat(document.getElementById('blood_pressure').value);
       const chol = parseFloat(document.getElementById('cholesterol').value);
@@ -355,7 +473,6 @@
       const act = parseFloat(document.getElementById('physical_activity').value);
       const stress = parseFloat(document.getElementById('stress_level').value);
 
-      document.getElementById('v_thresh').textContent = thresh.toFixed(2);
       document.getElementById('v_age').textContent = age + ' yrs';
       document.getElementById('v_bp').textContent = bp + ' mmHg';
       document.getElementById('v_chol').textContent = chol + ' mg/dL';
@@ -371,48 +488,52 @@
       const z = [age, bp, chol, bmi, act, stress].map((v, i) => (v - MEAN[i]) / STD[i]);
       const logit = -0.35 + 0.38*z[0] + 0.42*z[1] + 0.34*z[2] + 0.28*z[3] - 0.25*z[4] + 0.22*z[5]
                     + 0.25*oheSex + 0.55*oheSmoker + 0.60*oheDiab + 0.45*oheFam;
-      const prob = 1 / (1 + Math.exp(-logit));
-      const pct = (prob * 100).toFixed(1);
-      const isPos = prob >= thresh;
+      const p1 = 1 / (1 + Math.exp(-logit));
+      const p0 = 1 - p1;
+      const p1Pct = (p1 * 100).toFixed(1);
+      const p0Pct = (p0 * 100).toFixed(1);
 
-      const box = document.getElementById('outBox');
-      const lbl = document.getElementById('outLabel');
-      const main = document.getElementById('outMain');
-      const fill = document.getElementById('barFill');
-      const dir = document.getElementById('directive');
+      const hero = document.getElementById('resultHero');
+      const tag = document.getElementById('resultTag');
+      const title = document.getElementById('resultTitle');
+      const conf = document.getElementById('resultConf');
+      const note = document.getElementById('triageNote');
 
-      box.className = 'out-box';
-      if (isPos) {
-        box.classList.add('danger');
-        lbl.style.color = '#dc2626';
-        lbl.textContent = 'Positive Risk Alert (Class 1)';
-        main.textContent = 'Heart Disease Detected';
-        fill.style.background = '#dc2626';
-        dir.innerHTML = '<strong>Clinical Triage Directive:</strong> Flag patient chart for immediate cardiology consultation, lipid panel re-evaluation, and continuous blood pressure monitoring.';
-      } else if (prob >= thresh - 0.12) {
-        box.classList.add('warn');
-        lbl.style.color = '#b45309';
-        lbl.textContent = 'Borderline Watch Profile (Class 0)';
-        main.textContent = 'Moderate Risk — Below Threshold';
-        fill.style.background = '#d97706';
-        dir.innerHTML = '<strong>Clinical Triage Directive:</strong> Schedule lipid panel re-evaluation, resting blood pressure follow-up, and lifestyle stress reduction.';
+      hero.className = 'result-hero';
+      if (p1 >= 0.60) {
+        hero.classList.add('danger');
+        tag.style.color = '#dc2626';
+        tag.textContent = 'Predicted Class: 1 (High Risk)';
+        title.textContent = 'Heart Disease Risk Detected';
+        conf.textContent = 'Model Confidence: ' + p1Pct + '%';
+        note.innerHTML = '<strong>Clinical Guidance:</strong> Flag patient chart for immediate cardiology consultation, lipid panel re-evaluation, and continuous blood pressure monitoring.';
+      } else if (p1 >= 0.42) {
+        hero.classList.add('moderate');
+        tag.style.color = '#b45309';
+        tag.textContent = p1 >= 0.50 ? 'Predicted Class: 1 (Borderline)' : 'Predicted Class: 0 (Borderline Watch)';
+        title.textContent = p1 >= 0.50 ? 'Elevated Cardiovascular Risk' : 'Moderate Risk Watch';
+        conf.textContent = 'Model Confidence: ' + (p1 >= 0.50 ? p1Pct : p0Pct) + '%';
+        note.innerHTML = '<strong>Clinical Guidance:</strong> Schedule lipid panel re-evaluation, resting blood pressure follow-up, and lifestyle stress reduction.';
       } else {
-        lbl.style.color = '#0f766e';
-        lbl.textContent = 'Low / Normal Risk Profile (Class 0)';
-        main.textContent = 'No Heart Disease';
-        fill.style.background = '#0d9488';
-        dir.innerHTML = '<strong>Clinical Triage Directive:</strong> Continue routine annual preventive screening, dietary counseling, and regular cardiovascular exercise.';
+        tag.style.color = '#0f766e';
+        tag.textContent = 'Predicted Class: 0 (Low Risk)';
+        title.textContent = 'No Heart Disease';
+        conf.textContent = 'Model Confidence: ' + p0Pct + '%';
+        note.innerHTML = '<strong>Clinical Guidance:</strong> Continue routine annual preventive screening, balanced nutrition, and regular cardiovascular exercise.';
       }
 
-      document.getElementById('outProb').textContent = 'Calculated Risk Probability: ' + pct + '% (Threshold: ' + (thresh * 100).toFixed(0) + '%)';
-      fill.style.width = pct + '%';
-      document.getElementById('vecOut').textContent =
+      document.getElementById('p0_txt').textContent = p0Pct + '%';
+      document.getElementById('p0_bar').style.width = p0Pct + '%';
+      document.getElementById('p1_txt').textContent = p1Pct + '%';
+      document.getElementById('p1_bar').style.width = p1Pct + '%';
+
+      document.getElementById('vecDebug').textContent =
         'StandardScaler(num) = [' + z.map(v => v.toFixed(3)).join(', ') + ']\n' +
         'OneHotEncoder(cat)  = [sex_Male=' + oheSex + ', smoker_Yes=' + oheSmoker + ', diabetes_Yes=' + oheDiab + ', family_history_Yes=' + oheFam + ']\n' +
-        'P(heart_disease=1)  = ' + pct + '% | Predicted Class = ' + (isPos ? 1 : 0);
+        'P(Class 0) = ' + p0Pct + '% | P(Class 1) = ' + p1Pct + '%';
     }
 
-    runInference();
+    predict();
   </script>
 </body>
 </html>
