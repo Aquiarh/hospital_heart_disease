@@ -6,94 +6,99 @@
   <title>Heart Disease Risk Screening | Korbla Patience Aku Dela</title>
   <style>
     :root {
-      --bg: #0b1120;
-      --surface: #111827;
-      --surface-2: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #14b8a6;
-      --accent-soft: rgba(20, 184, 166, 0.15);
-      --danger: #ef4444;
-      --warn: #f59e0b;
+      --navy: #0f172a;
+      --teal: #0d9488;
+      --teal-dark: #0f766e;
+      --teal-soft: #f0fdfa;
+      --red: #dc2626;
+      --amber: #d97706;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 3rem; }
     .container { max-width: 1080px; margin: 0 auto; padding: 0 1rem; }
-    header { background: linear-gradient(135deg, #0f172a 0%, #132a3a 100%); border-bottom: 1px solid var(--border); padding: 1.5rem 0; }
-    .header-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-    .target-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--accent-soft); border: 1px solid rgba(20,184,166,0.4); color: #5eead4; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 999px; margin-bottom: 0.5rem; }
-    header h1 { font-size: 1.55rem; font-weight: 800; letter-spacing: -0.01em; }
-    header p { color: var(--muted); font-size: 0.88rem; margin-top: 0.25rem; }
-    .header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
-    .status-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(34,197,94,0.14); border: 1px solid rgba(34,197,94,0.35); color: #86efac; font-size: 0.78rem; font-weight: 700; padding: 0.4rem 0.75rem; border-radius: 0.55rem; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
-    .repo-btn { text-decoration: none; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 0.8rem; font-weight: 700; padding: 0.42rem 0.85rem; border-radius: 0.55rem; }
-    .repo-btn:hover { border-color: var(--accent); color: #5eead4; }
 
-    .nav-wrap { position: sticky; top: 0; z-index: 30; background: rgba(11, 17, 32, 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0.65rem 0; }
+    header { background: var(--card); border-bottom: 1px solid var(--border); padding: 1.35rem 0; }
+    .header-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+    .target-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--teal-soft); border: 1px solid #99f6e4; color: var(--teal-dark); font-size: 0.75rem; font-weight: 700; padding: 0.22rem 0.7rem; border-radius: 999px; margin-bottom: 0.45rem; }
+    header h1 { font-size: 1.5rem; font-weight: 800; color: var(--navy); letter-spacing: -0.01em; }
+    header p { color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; }
+    .header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+    .status-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; font-size: 0.78rem; font-weight: 700; padding: 0.4rem 0.75rem; border-radius: 0.55rem; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+    .repo-btn { text-decoration: none; background: var(--navy); color: #fff; font-size: 0.8rem; font-weight: 700; padding: 0.44rem 0.9rem; border-radius: 0.55rem; }
+    .repo-btn:hover { background: var(--teal-dark); }
+
+    .nav-wrap { position: sticky; top: 0; z-index: 30; background: rgba(248, 250, 252, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 0.6rem 0; }
     .tabs { display: flex; gap: 0.45rem; overflow-x: auto; }
-    .tab-btn { padding: 0.55rem 0.9rem; border-radius: 0.55rem; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 0.82rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
-    .tab-btn.active { background: var(--accent); color: #042f2e; border-color: var(--accent); }
-    .panel { display: none; margin-top: 1.25rem; }
+    .tab-btn { padding: 0.52rem 0.9rem; border-radius: 0.55rem; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: 0.82rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+    .tab-btn:hover { border-color: var(--teal); color: var(--navy); }
+    .tab-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15); }
+    .panel { display: none; margin-top: 1.2rem; }
     .panel.active { display: block; }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.85rem; padding: 1.15rem; margin-bottom: 1rem; }
-    .card h2 { font-size: 1.08rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .card h3 { font-size: 0.98rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 0.85rem; padding: 1.15rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+    .card h2 { font-size: 1.08rem; font-weight: 700; color: var(--navy); margin-bottom: 0.25rem; }
+    .card h3 { font-size: 0.98rem; font-weight: 700; color: var(--navy); margin-bottom: 0.25rem; }
     .sub { color: var(--muted); font-size: 0.82rem; margin-bottom: 0.9rem; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-    @media (min-width: 800px) { .grid-2 { grid-template-columns: 1.1fr 0.9fr; } }
+    @media (min-width: 800px) { .grid-2 { grid-template-columns: 1.1fr 0.9fr; align-items: start; } }
 
     .kpi-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
     @media (min-width: 760px) { .kpi-row { grid-template-columns: repeat(5, 1fr); } }
-    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.85rem; }
+    .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.85rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
     .kpi-title { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-    .kpi-num { font-size: 1.4rem; font-weight: 800; color: #5eead4; margin: 0.2rem 0; }
+    .kpi-num { font-size: 1.4rem; font-weight: 800; color: var(--teal-dark); margin: 0.2rem 0; }
     .kpi-note { font-size: 0.75rem; color: var(--muted); }
 
     .presets { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.85rem; }
-    .preset { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 0.76rem; font-weight: 600; padding: 0.38rem 0.7rem; border-radius: 999px; cursor: pointer; }
-    .preset:hover { border-color: var(--accent); }
+    .preset { background: #f1f5f9; border: 1px solid var(--border); color: var(--navy); font-size: 0.76rem; font-weight: 600; padding: 0.38rem 0.75rem; border-radius: 999px; cursor: pointer; }
+    .preset:hover { background: #e2e8f0; }
 
     .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 0.85rem; }
-    label { display: block; font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-bottom: 0.25rem; }
-    select { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.45rem 0.6rem; font-size: 0.84rem; font-weight: 600; }
+    label { display: block; font-size: 0.78rem; color: #334155; font-weight: 600; margin-bottom: 0.25rem; }
+    select { width: 100%; background: #fff; color: var(--navy); border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.45rem 0.6rem; font-size: 0.84rem; font-weight: 600; }
     .slider-item { margin-bottom: 0.75rem; }
     .slider-top { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem; }
-    .slider-top span:last-child { color: #5eead4; font-weight: 800; }
-    input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+    .slider-top span:last-child { color: var(--teal-dark); font-weight: 800; }
+    input[type="range"] { width: 100%; accent-color: var(--navy); cursor: pointer; }
 
-    .meta-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; background: var(--surface-2); padding: 0.75rem; border-radius: 0.6rem; font-size: 0.78rem; margin-top: 0.75rem; }
+    .meta-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; background: #f8fafc; border: 1px solid var(--border); padding: 0.75rem; border-radius: 0.6rem; font-size: 0.78rem; margin-top: 0.75rem; }
     .meta-list span { color: var(--muted); display: block; font-size: 0.7rem; }
 
-    .out-box { border-radius: 0.75rem; padding: 1rem; background: var(--surface-2); border-left: 5px solid var(--accent); margin-bottom: 0.85rem; }
-    .out-box.warn { border-left-color: var(--warn); }
-    .out-box.danger { border-left-color: var(--danger); }
-    .out-label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: #5eead4; }
-    .out-main { font-size: 1.35rem; font-weight: 800; margin: 0.2rem 0; }
-    .bar-bg { height: 10px; background: #0f172a; border-radius: 999px; overflow: hidden; margin: 0.6rem 0; }
-    .bar-fill { height: 100%; background: var(--accent); transition: width 0.2s ease; }
-    pre { background: #090d16; border: 1px solid var(--border); color: #7dd3fc; padding: 0.7rem; border-radius: 0.55rem; font-size: 0.74rem; overflow-x: auto; margin-top: 0.6rem; }
+    .out-box { border-radius: 0.75rem; padding: 1rem; background: var(--teal-soft); border-left: 5px solid var(--teal); margin-bottom: 0.85rem; }
+    .out-box.warn { border-left-color: var(--amber); background: #fffbeb; }
+    .out-box.danger { border-left-color: var(--red); background: #fef2f2; }
+    .out-label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--teal-dark); }
+    .out-main { font-size: 1.35rem; font-weight: 800; color: var(--navy); margin: 0.2rem 0; }
+    .bar-bg { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin: 0.6rem 0; }
+    .bar-fill { height: 100%; background: var(--teal); transition: width 0.2s ease; }
+    .directive-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.75rem; font-size: 0.83rem; color: #334155; }
+    pre { background: #0f172a; color: #38bdf8; padding: 0.7rem; border-radius: 0.55rem; font-size: 0.74rem; overflow-x: auto; margin-top: 0.65rem; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-    th { background: var(--surface-2); color: #5eead4; text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+    th { background: var(--navy); color: #fff; text-align: left; padding: 0.6rem 0.75rem; }
     td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); }
+    tr:nth-child(even) td { background: #f8fafc; }
 
     .cm-table td, .cm-table th { text-align: center; border: 1px solid var(--border); padding: 0.85rem; }
     .cm-big { font-size: 1.35rem; font-weight: 800; display: block; }
     .rate-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; margin-top: 0.85rem; }
     @media (min-width: 700px) { .rate-grid { grid-template-columns: repeat(3, 1fr); } }
-    .rate-item { background: var(--surface-2); padding: 0.75rem; border-radius: 0.6rem; border: 1px solid var(--border); }
+    .rate-item { background: #f8fafc; padding: 0.75rem; border-radius: 0.6rem; border: 1px solid var(--border); }
     .rate-item span { font-size: 0.74rem; color: var(--muted); display: block; }
-    .rate-item strong { font-size: 0.98rem; color: #f8fafc; }
+    .rate-item strong { font-size: 0.98rem; color: var(--navy); }
 
     .chart { width: 100%; height: auto; border-radius: 0.6rem; border: 1px solid var(--border); background: #fff; margin-top: 0.5rem; }
     .diag-list { list-style: none; display: grid; gap: 0.75rem; }
-    .diag-list li { background: var(--surface-2); border: 1px solid var(--border); border-radius: 0.65rem; padding: 0.85rem; }
-    .diag-list strong { color: #5eead4; display: block; margin-bottom: 0.2rem; }
+    .diag-list li { background: #f8fafc; border: 1px solid var(--border); border-radius: 0.65rem; padding: 0.85rem; }
+    .diag-list strong { color: var(--navy); display: block; margin-bottom: 0.2rem; }
     footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
   </style>
 </head>
@@ -102,7 +107,7 @@
     <div class="container header-top">
       <div>
         <div class="target-pill">Target: Heart Disease (Class 1)</div>
-        <h1>Heart Disease Risk Screening</h1>
+        <h1>Hospital Management System: Heart Disease Risk Screening</h1>
         <p>RandomForestClassifier (100 Trees) + OneHotEncoder + StandardScaler • 500 Clinical Records</p>
       </div>
       <div class="header-actions">
@@ -129,7 +134,7 @@
       <div class="grid-2">
         <div class="card">
           <h2>Clinical Intake &amp; Model Controls</h2>
-          <p class="sub">Select a patient profile or adjust physiological vitals and categorical risk factors.</p>
+          <p class="sub">Select a sample patient profile or adjust physiological vitals and categorical risk factors.</p>
           <div class="presets">
             <button class="preset" onclick="setPreset(34,'Female','No',105,175,22.0,'No','No',4,2)">Sample 1 (Low Risk)</button>
             <button class="preset" onclick="setPreset(55,'Male','No',130,220,28.5,'No','No',2,5)">Sample 2 (Standard)</button>
@@ -157,10 +162,10 @@
           <div class="slider-item"><div class="slider-top"><span>Psychological Stress Level</span><span id="v_stress">5 / 9</span></div><input type="range" id="stress_level" min="1" max="9" value="5" oninput="runInference()" /></div>
 
           <div class="meta-list">
-            <div><span>Architecture</span>Random Forest + OHE</div>
-            <div><span>Target Class</span>Heart Disease (ID: 1)</div>
-            <div><span>Encoded Dimensions</span>10 Features (6 Num + 4 Cat)</div>
-            <div><span>Dataset Split</span>80% Train / 20% Test</div>
+            <div><span>Architecture</span><strong>Random Forest + OHE</strong></div>
+            <div><span>Target Class</span><strong>Heart Disease (ID: 1)</strong></div>
+            <div><span>Encoded Dimensions</span><strong>10 Features (6 Num + 4 Cat)</strong></div>
+            <div><span>Dataset Split</span><strong>80% Train / 20% Test</strong></div>
           </div>
         </div>
 
@@ -173,7 +178,7 @@
             <div id="outProb">Risk Probability: 42.1% (Threshold: 50.0%)</div>
             <div class="bar-bg"><div id="barFill" class="bar-fill" style="width:42.1%"></div></div>
           </div>
-          <div id="directive" style="font-size:0.84rem;color:#cbd5e1;">
+          <div id="directive" class="directive-box">
             <strong>Clinical Triage Directive:</strong> Continue routine annual preventive screening, dietary counseling, and regular cardiovascular exercise.
           </div>
           <pre id="vecOut"></pre>
@@ -246,8 +251,8 @@
           <table class="cm-table">
             <thead><tr><th></th><th>Predicted: Heart Disease (1)</th><th>Predicted: No Disease (0)</th></tr></thead>
             <tbody>
-              <tr><th>Actual: Heart Disease (1)</th><td><span class="cm-big" style="color:#5eead4;">30</span>True Positive (56.60%)</td><td><span class="cm-big" style="color:#f87171;">23</span>False Negative (43.40%)</td></tr>
-              <tr><th>Actual: No Disease (0)</th><td><span class="cm-big" style="color:#fbbf24;">21</span>False Positive (41.18% FDR)</td><td><span class="cm-big" style="color:#93c5fd;">26</span>True Negative (55.32%)</td></tr>
+              <tr><th>Actual: Heart Disease (1)</th><td><span class="cm-big" style="color:#0f766e;">30</span>True Positive (56.60%)</td><td><span class="cm-big" style="color:#dc2626;">23</span>False Negative (43.40%)</td></tr>
+              <tr><th>Actual: No Disease (0)</th><td><span class="cm-big" style="color:#d97706;">21</span>False Positive (41.18% FDR)</td><td><span class="cm-big" style="color:#1e3a8a;">26</span>True Negative (55.32%)</td></tr>
             </tbody>
           </table>
         </div>
@@ -379,23 +384,23 @@
       box.className = 'out-box';
       if (isPos) {
         box.classList.add('danger');
-        lbl.style.color = '#f87171';
+        lbl.style.color = '#dc2626';
         lbl.textContent = 'Positive Risk Alert (Class 1)';
         main.textContent = 'Heart Disease Detected';
-        fill.style.background = '#ef4444';
+        fill.style.background = '#dc2626';
         dir.innerHTML = '<strong>Clinical Triage Directive:</strong> Flag patient chart for immediate cardiology consultation, lipid panel re-evaluation, and continuous blood pressure monitoring.';
       } else if (prob >= thresh - 0.12) {
         box.classList.add('warn');
-        lbl.style.color = '#fbbf24';
+        lbl.style.color = '#b45309';
         lbl.textContent = 'Borderline Watch Profile (Class 0)';
         main.textContent = 'Moderate Risk — Below Threshold';
-        fill.style.background = '#f59e0b';
+        fill.style.background = '#d97706';
         dir.innerHTML = '<strong>Clinical Triage Directive:</strong> Schedule lipid panel re-evaluation, resting blood pressure follow-up, and lifestyle stress reduction.';
       } else {
-        lbl.style.color = '#5eead4';
+        lbl.style.color = '#0f766e';
         lbl.textContent = 'Low / Normal Risk Profile (Class 0)';
         main.textContent = 'No Heart Disease';
-        fill.style.background = '#14b8a6';
+        fill.style.background = '#0d9488';
         dir.innerHTML = '<strong>Clinical Triage Directive:</strong> Continue routine annual preventive screening, dietary counseling, and regular cardiovascular exercise.';
       }
 
